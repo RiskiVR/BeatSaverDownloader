@@ -6,9 +6,10 @@ using SimpleJSON;
 using SongLoaderPlugin;
 using SongLoaderPlugin.OverrideClasses;
 
-namespace BeatSaverDownloader.Misc
+namespace BeatSaverDownloader
 {
-    public enum SongQueueState { Queued, Downloading, Downloaded, Error }; 
+
+    public enum SongQueueState { Available, Queued, Downloading, Downloaded, Error }; 
 
     [Serializable]
     public class DifficultyLevel
@@ -24,6 +25,13 @@ namespace BeatSaverDownloader.Misc
             difficultyRank = difficultyLevel.difficultyRank;
             jsonPath = difficultyLevel.jsonPath;
         }
+
+        /*
+        public DifficultyLevel(CustomLevelInfo.DifficultyLevelInfo difficultyLevel)
+        {
+            difficulty = difficultyLevel.difficulty;
+            difficultyRank = difficultyLevel.difficultyRank;
+        }*/
 
         public DifficultyLevel(string Difficulty, int DifficultyRank, string JsonPath, int Offset = 0)
         {
@@ -44,7 +52,7 @@ namespace BeatSaverDownloader.Misc
         public string downloads;
         public string upvotes;
         public string plays;
-        public string description;
+        public string beattext;
         public string uploadtime;
         public string songName;
         public string songSubName;
@@ -59,7 +67,7 @@ namespace BeatSaverDownloader.Misc
 
         public string path;
 
-        public SongQueueState songQueueState = SongQueueState.Queued;
+        public SongQueueState songQueueState = SongQueueState.Available;
 
         public float downloadingProgress = 0f;
 
@@ -77,7 +85,7 @@ namespace BeatSaverDownloader.Misc
             upvotes = jsonNode["upVotes"];
             downvotes = jsonNode["downVotes"];
             plays = jsonNode["playedCount"];
-            description = jsonNode["description"];
+            beattext = jsonNode["description"];
             uploadtime = jsonNode["createdAt"];
             songName = jsonNode["songName"];
             songSubName = jsonNode["songSubName"];
@@ -86,7 +94,6 @@ namespace BeatSaverDownloader.Misc
             coverUrl = jsonNode["coverUrl"];
             downloadUrl = jsonNode["downloadUrl"];
             hash = jsonNode["hashMd5"];
-            hash = hash.ToUpper();
 
             var difficultyNode = jsonNode["difficulties"];
 
@@ -139,7 +146,7 @@ namespace BeatSaverDownloader.Misc
             upvotes = jsonNode["upVotes"];
             downvotes = jsonNode["downVotes"];
             plays = jsonNode["playedCount"];
-            description = jsonNode["description"];
+            beattext = jsonNode["description"];
             uploadtime = jsonNode["createdAt"];
             songName = jsonNode["songName"];
             songSubName = jsonNode["songSubName"];
@@ -183,9 +190,8 @@ namespace BeatSaverDownloader.Misc
             songName = _data.songName;
             songSubName = _data.songSubName;
             authorName = _data.songAuthorName;
-            difficultyLevels = ConvertDifficultyLevels(_data.difficultyBeatmapSets.SelectMany(x => x.difficultyBeatmaps).ToArray());
+            difficultyLevels = ConvertDifficultyLevels(_data.difficultyBeatmaps);
             path = _data.customSongInfo.path;
-            hash = _data.levelID.Substring(0, 32);
         }
 
         public Song(CustomSongInfo _song)
@@ -196,7 +202,6 @@ namespace BeatSaverDownloader.Misc
             authorName = _song.songAuthorName;
             difficultyLevels = ConvertDifficultyLevels(_song.difficultyLevels);
             path = _song.path;
-            hash = _song.levelId.Substring(0, 32);
         }
 
         public DifficultyLevel[] ConvertDifficultyLevels(CustomSongInfo.DifficultyLevel[] _difficultyLevels)
@@ -220,7 +225,7 @@ namespace BeatSaverDownloader.Misc
         }
 
         
-        public DifficultyLevel[] ConvertDifficultyLevels(IDifficultyBeatmap[] _difficultyLevels)
+        public DifficultyLevel[] ConvertDifficultyLevels(IStandardLevelDifficultyBeatmap[] _difficultyLevels)
         {
             if (_difficultyLevels != null && _difficultyLevels.Length > 0)
             {

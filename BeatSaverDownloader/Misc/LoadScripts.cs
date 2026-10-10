@@ -1,5 +1,4 @@
-﻿using CustomUI.Utilities;
-using HMUI;
+﻿using HMUI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,13 +12,13 @@ namespace BeatSaverDownloader.Misc
     {
         static public Dictionary<string, Sprite> _cachedSprites = new Dictionary<string, Sprite>();
 
-        static public IEnumerator LoadSpriteCoroutine(string spritePath, Action<Sprite> finished)
+        static public IEnumerator LoadSprite(string spritePath, TableCell obj)
         {
             Texture2D tex;
             
             if (_cachedSprites.ContainsKey(spritePath))
             {
-                finished.Invoke(_cachedSprites[spritePath]);
+                obj.GetComponentsInChildren<UnityEngine.UI.Image>(true).First(x => x.name == "CoverImage").sprite = _cachedSprites[spritePath];
                 yield break;
             }
 
@@ -29,11 +28,11 @@ namespace BeatSaverDownloader.Misc
                 tex = www.texture;
                 var newSprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), Vector2.one * 0.5f, 100, 1);
                 _cachedSprites.Add(spritePath, newSprite);
-                finished.Invoke(newSprite);
+                obj.GetComponentsInChildren<UnityEngine.UI.Image>(true).First(x => x.name == "CoverImage").sprite = newSprite;
             }
         }
 
-        static public IEnumerator LoadAudioCoroutine(string audioPath, object obj, string fieldName)
+        static public IEnumerator LoadAudio(string audioPath, object obj, string fieldName)
         {
             using (var www = new WWW(audioPath))
             {

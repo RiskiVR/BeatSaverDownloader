@@ -4,46 +4,39 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
-using TMPro;
 using UnityEngine;
 
-namespace BeatSaverDownloader.UI.UIElements
+namespace BeatSaverDownloader.PluginUI
 {
-    class DownloadQueueTableCell : LevelListTableCell
+    class DownloadQueueTableCell : StandardLevelListTableCell
     {
+
         Song song;
-        
+
+
         protected override void Awake()
         {
             base.Awake();
         }
 
         public void Init(Song _song)
-        {            
-            Destroy(GetComponent<LevelListTableCell>());
-
+        {
+            StandardLevelListTableCell cell = GetComponent<StandardLevelListTableCell>();
+            
+            foreach (FieldInfo info in cell.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic))
+            {
+                info.SetValue(this, info.GetValue(cell));
+            }
+            
+            Destroy(cell);
+            
             reuseIdentifier = "DownloadCell";
 
             song = _song;
-
-            _authorText = GetComponentsInChildren<TextMeshProUGUI>().First(x => x.name == "Author");
-            _songNameText = GetComponentsInChildren<TextMeshProUGUI>().First(x => x.name == "SongName");
-            _coverImage = GetComponentsInChildren<UnityEngine.UI.Image>().First(x => x.name == "CoverImage");
-            _bgImage = GetComponentsInChildren<UnityEngine.UI.Image>().First(x => x.name == "BG");
-            _highlightImage = GetComponentsInChildren<UnityEngine.UI.Image>().First(x => x.name == "Highlight");
-            _beatmapCharacteristicAlphas = new float[0];
-            _beatmapCharacteristicImages = new UnityEngine.UI.Image[0];
-            _bought = true;
             
-            foreach(var icon in GetComponentsInChildren<UnityEngine.UI.Image>().Where(x => x.name.StartsWith("LevelTypeIcon")))
-            {
-                Destroy(icon.gameObject);
-            }
-
-            _songNameText.text = string.Format("{0}\n<size=80%>{1}</size>", song.songName, song.songSubName);
-            _authorText.text = song.authorName;
-            StartCoroutine(LoadScripts.LoadSpriteCoroutine(song.coverUrl, (cover) => { _coverImage.sprite = cover; }));
+            songName = string.Format("{0}\n<size=80%>{1}</size>", song.songName, song.songSubName);
+            author = song.authorName;
+            StartCoroutine(LoadScripts.LoadSprite(song.coverUrl, this));
 
             _bgImage.enabled = true;
             _bgImage.sprite = Sprite.Create((new Texture2D(1, 1)), new Rect(0, 0, 1, 1), Vector2.one / 2f);
@@ -59,6 +52,7 @@ namespace BeatSaverDownloader.UI.UIElements
                         _bgImage.fillAmount = song.downloadingProgress;
                     }
                     break;
+                case SongQueueState.Available:
                 case SongQueueState.Downloaded:
                     {
                         _bgImage.color = new Color(1f, 1f, 1f, 0.35f);
@@ -87,6 +81,7 @@ namespace BeatSaverDownloader.UI.UIElements
                         _bgImage.fillAmount = song.downloadingProgress;
                     }
                     break;
+                case SongQueueState.Available:
                 case SongQueueState.Downloaded:
                     {
                         _bgImage.color = new Color(1f, 1f, 1f, 0.35f);
@@ -101,5 +96,6 @@ namespace BeatSaverDownloader.UI.UIElements
                     break;
             }
         }
+
     }
 }

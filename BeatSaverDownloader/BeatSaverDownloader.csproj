@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BeatSaverDownloader</RootNamespace>
     <AssemblyName>BeatSaverDownloader</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
@@ -24,43 +24,36 @@
     <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\0Harmony.dll</HintPath>
-    </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Assembly-CSharp-firstpass">
+    <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
-    <Reference Include="BeatSaberCustomUI">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Plugins\BeatSaberCustomUI.dll</HintPath>
-    </Reference>
-    <Reference Include="BS_Utils">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Plugins\BS_Utils.dll</HintPath>
-    </Reference>
-    <Reference Include="IPA.Loader, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="IllusionInjector, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\IPA.Loader.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\IllusionInjector.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="IllusionPlugin, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\IllusionPlugin.dll</HintPath>
     </Reference>
-    <Reference Include="SongLoaderPlugin">
+    <Reference Include="SongLoaderPlugin, Version=4.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Plugins\SongLoaderPlugin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Unity.TextMeshPro">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+    <Reference Include="TextMeshPro-1.0.55.2017.1.0b12">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\TextMeshPro-1.0.55.2017.1.0b12.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\UnityEngine.dll</HintPath>
@@ -79,10 +72,6 @@
     <Reference Include="UnityEngine.JSONSerializeModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\UnityEngine.JSONSerializeModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\UnityEngine.UI.dll</HintPath>
@@ -115,62 +104,36 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Misc\PlaylistLevelPackSO.cs" />
-    <Compile Include="Misc\Sprites.cs" />
+    <Compile Include="Misc\Base64Sprites.cs" />
     <Compile Include="Misc\BeatSaverAPIResult.cs" />
-    <Compile Include="Misc\BSEvents.cs" />
-    <Compile Include="Misc\FileOperationAPIWrapper.cs" />
+    <Compile Include="Misc\InputBox.cs" />
     <Compile Include="Misc\LoadScripts.cs" />
     <Compile Include="Misc\Playlist.cs" />
-    <Compile Include="Misc\ScrappedData.cs" />
-    <Compile Include="Misc\SongDownloader.cs" />
-    <Compile Include="Misc\CustomHelpers.cs" />
-    <Compile Include="Misc\SteamHelper.cs" />
-    <Compile Include="Plugin.cs" />
     <Compile Include="Misc\PluginConfig.cs" />
+    <Compile Include="PluginUI\ViewControllers\BeastSaberReviewViewController.cs" />
+    <Compile Include="PluginUI\ViewControllers\BeatSaverNavigationController.cs" />
+    <Compile Include="PluginUI\ViewControllers\BeatSaverSongDetailViewController.cs" />
+    <Compile Include="PluginUI\ViewControllers\BeatSaverSongListViewController.cs" />
+    <Compile Include="Misc\Logger.cs" />
+    <Compile Include="Plugin.cs" />
+    <Compile Include="PluginUI\UIElements\CustomUIKeyboard.cs" />
+    <Compile Include="PluginUI\UIElements\DownloadQueueTableCell.cs" />
+    <Compile Include="PluginUI\ViewControllers\DownloadQueueViewController.cs" />
+    <Compile Include="PluginUI\PluginUI.cs" />
+    <Compile Include="PluginUI\SongListUITweaks.cs" />
+    <Compile Include="PluginUI\UIElements\StarsUIControl.cs" />
+    <Compile Include="PluginUI\ViewControllers\PlaylistDetailViewController.cs" />
+    <Compile Include="PluginUI\ViewControllers\PlaylistNavigationController.cs" />
+    <Compile Include="PluginUI\ViewControllers\PlaylistsListViewController.cs" />
+    <Compile Include="PluginUI\VotingUI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UI\FlowCoordinators\MorePlaylistsFlowCoordinator.cs" />
-    <Compile Include="UI\FlowCoordinators\MoreSongsFlowCoordinator.cs" />
-    <Compile Include="UI\FlowCoordinators\ReviewFlowCoordinator.cs" />
-    <Compile Include="UI\PluginUI.cs" />
-    <Compile Include="UI\SongListTweaks.cs" />
-    <Compile Include="UI\UIElements\CustomUIKeyboard.cs" />
-    <Compile Include="UI\UIElements\DownloadQueueTableCell.cs" />
-    <Compile Include="UI\UIElements\StarsUIControl.cs" />
-    <Compile Include="UI\UIElements\TextMeshProHyperlinkHandler.cs" />
-    <Compile Include="UI\ViewControllers\DownloadQueueViewController.cs" />
-    <Compile Include="UI\ViewControllers\MoreSongsListViewController.cs" />
-    <Compile Include="UI\ViewControllers\BackButtonNavigationController.cs" />
-    <Compile Include="UI\ViewControllers\PlaylistDetailViewController.cs" />
-    <Compile Include="UI\ViewControllers\PlaylistListViewController.cs" />
-    <Compile Include="UI\ViewControllers\ReviewViewController.cs" />
-    <Compile Include="UI\ViewControllers\SearchKeyboardViewController.cs" />
-    <Compile Include="UI\ViewControllers\SongDescriptionViewController.cs" />
-    <Compile Include="UI\ViewControllers\SongDetailViewController.cs" />
-    <Compile Include="UI\VotingUI.cs" />
+    <Compile Include="Misc\ReflectionUtil.cs" />
+    <Compile Include="Misc\SongBrowserSettings.cs" />
+    <Compile Include="UIFramework\BeatSaberUI.cs" />
+    <Compile Include="PluginUI\ViewControllers\SearchKeyboardViewController.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Assets\AddToFavorites.png" />
-    <EmbeddedResource Include="Assets\DeleteIcon.png" />
-    <EmbeddedResource Include="Assets\DoubleArrow.png" />
-    <EmbeddedResource Include="Assets\BeastSaberLogo.png" />
-    <EmbeddedResource Include="Assets\DownloadIcon.png" />
-    <EmbeddedResource Include="Assets\RandomIcon.png" />
-    <EmbeddedResource Include="Assets\PlayIcon.png" />
-    <EmbeddedResource Include="Assets\SongIcon.png" />
-    <EmbeddedResource Include="Assets\PlaylistIcon.png" />
-    <EmbeddedResource Include="Assets\ThumbDown.png" />
-    <EmbeddedResource Include="Assets\ThumbUp.png" />
-    <EmbeddedResource Include="Assets\ReviewIcon.png" />
-    <EmbeddedResource Include="Assets\StarEmpty.png" />
-    <EmbeddedResource Include="Assets\StarFull.png" />
-    <EmbeddedResource Include="Assets\RemoveFromFavorites.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="manifest.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
