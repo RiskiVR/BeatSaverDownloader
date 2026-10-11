@@ -163,7 +163,7 @@ namespace BeatSaverDownloader.PluginUI
             if (_starButton == null)
             {
                 _starButton = BeatSaberUI.CreateUIButton(rectTransform, "SettingsButton");
-                BeatSaberUI.SetButtonText(_starButton, "2018 Maps");
+                BeatSaberUI.SetButtonText(_starButton, "Random 2018");
                 BeatSaberUI.SetButtonTextSize(_starButton, 3f);
                 (_starButton.transform as RectTransform).sizeDelta = new Vector2(20f, 6f);
                 (_starButton.transform as RectTransform).anchoredPosition = new Vector2(-2f, 73f);
@@ -174,7 +174,7 @@ namespace BeatSaverDownloader.PluginUI
                     {
                         _parentMasterViewController._loading = true;
                         _parentMasterViewController._legacy = true;
-                        _parentMasterViewController._sortBy = Sort.Latest;
+                        _parentMasterViewController._sortBy = Sort.Random;
                         _currentPage = 0;
                         _parentMasterViewController.ClearSearchInput();
                         _parentMasterViewController.GetPage(_currentPage);
