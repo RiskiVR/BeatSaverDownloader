@@ -1,12 +1,12 @@
 ﻿using SimpleJSON;
-using SongLoaderPlugin;
-using SongLoaderPlugin.OverrideClasses;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using LegacyCore;
+using LegacyCore.Custom;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -29,15 +29,17 @@ namespace BeatSaverDownloader.PluginUI
         public List<Song> _songs = new List<Song>();
         public List<Song> _alreadyDownloadedSongs = new List<Song>();
 
-        private List<CustomLevel> _notUpdatedSongs = new List<CustomLevel>();
+        private List<CustomLevelSO> _notUpdatedSongs = new List<CustomLevelSO>();
 
         public Button _downloadButton;
         Button _backButton;
 
         SongPreviewPlayer _songPreviewPlayer;
 
-        public string _sortBy = "top";
+        public bool _legacy;
+        public Sort _sortBy;
         private bool isLoading = false;
+        private string before2018 = "&to=2019-01-01";
         public bool _loading { get { return isLoading; } set { isLoading = value; SetLoadingIndicator(isLoading); } }
         public int _selectedRow = -1;
         
@@ -45,7 +47,7 @@ namespace BeatSaverDownloader.PluginUI
 
         protected override void DidActivate(bool firstActivation, ActivationType type)
         {
-            _alreadyDownloadedSongs = SongLoader.CustomLevels.Select(x => new Song(x)).ToList();
+            _alreadyDownloadedSongs = Loader.customLevels.Select(x => new Song(x)).ToList();
             
             if (_songPreviewPlayer == null)
             {
@@ -85,7 +87,7 @@ namespace BeatSaverDownloader.PluginUI
                         }
                         try
                         {
-                            SongLoader.Instance.RefreshSongs(false);
+                            Loader.instance.ReloadLevels(false);
                             _notUpdatedSongs.Clear();
                         }
                         catch (Exception e)
@@ -122,14 +124,14 @@ namespace BeatSaverDownloader.PluginUI
             }
         }
 
-        public IEnumerator GetSongs(int page, string sortBy)
+        public IEnumerator GetSongs(int page, Sort sortBy)
         {
             _songs.Clear();
             _songListViewController._songsTableView.ReloadData();
 
             _loading = true;
-            
-            UnityWebRequest www = UnityWebRequest.Get($"{PluginConfig.beatsaverURL}/api/songs/{sortBy}/{(page * _songListViewController._songsPerPage)}");
+
+            UnityWebRequest www = UnityWebRequest.Get($"{PluginConfig.beatsaverURL}/api/search/text/{page}?order={sortBy.ToString()}&pageSize={_songListViewController._songsPerPage}{(_legacy ? before2018 : "")}");
             www.timeout = 30;
             yield return www.SendWebRequest();
             
@@ -146,9 +148,9 @@ namespace BeatSaverDownloader.PluginUI
                 {
                     JSONNode node = JSON.Parse(www.downloadHandler.text);
 
-                    for (int i = 0; i < node["songs"].Count; i++)
+                    for (int i = 0; i < node["docs"].Count; i++)
                     {
-                        _songs.Add(new Song(node["songs"][i]));
+                        _songs.Add(new Song(node["docs"][i]));
                     }
 
 
@@ -159,8 +161,8 @@ namespace BeatSaverDownloader.PluginUI
                         ShowDetails(Math.Min(_selectedRow, _songs.Count-1));
                     }
 
-                    _songListViewController._pageUpButton.interactable = (page == 0) ? false : true;
-                    _songListViewController._pageDownButton.interactable = (_songs.Count == 0) ? false : true;
+                    _songListViewController._pageUpButton.interactable = page != 0;
+                    _songListViewController._pageDownButton.interactable = _songs.Count != 0;
 
                 }
                 catch (Exception e)
@@ -176,8 +178,7 @@ namespace BeatSaverDownloader.PluginUI
             _songs.Clear();
             _songListViewController._songsTableView.ReloadData();
             
-            UnityWebRequest www = UnityWebRequest.Get($"{PluginConfig.beatsaverURL}/api/songs/search/all/{search}");
-
+            UnityWebRequest www = UnityWebRequest.Get($"{PluginConfig.beatsaverURL}/api/search/text/{page}?pageSize={_songListViewController._songsPerPage}&q={search}");
             www.timeout = 30;
             yield return www.SendWebRequest();
 
@@ -195,21 +196,22 @@ namespace BeatSaverDownloader.PluginUI
                 try
                 {
                     JSONNode node = JSON.Parse(www.downloadHandler.text);
-                    
-                    for (int i = (page * _songListViewController._songsPerPage); i < Math.Min(node["songs"].Count, ((page + 1) * _songListViewController._songsPerPage)); i++)
+
+                    for (int i = 0; i < node["docs"].Count; i++)
                     {
-                        _songs.Add(Song.FromSearchNode(node["songs"][i]));
+                        _songs.Add(new Song(node["docs"][i]));
                     }
+
 
                     _songListViewController._songsTableView.ReloadData();
                     if (_selectedRow != -1 && _songs.Count > 0)
                     {
-                        _songListViewController._songsTableView.SelectRow(Math.Min(_selectedRow,_songs.Count-1));
+                        _songListViewController._songsTableView.SelectRow(Math.Min(_selectedRow, _songs.Count-1));
                         ShowDetails(Math.Min(_selectedRow, _songs.Count-1));
                     }
 
-                    _songListViewController._pageUpButton.interactable = (page == 0) ? false : true;
-                    _songListViewController._pageDownButton.interactable = (_songs.Count == 0) ? false : true;
+                    _songListViewController._pageUpButton.interactable = page != 0;
+                    _songListViewController._pageDownButton.interactable = _songs.Count != 0;
 
                 }
                 catch (Exception e)
@@ -308,7 +310,7 @@ namespace BeatSaverDownloader.PluginUI
                     string docPath = Application.dataPath;
                     docPath = docPath.Substring(0, docPath.Length - 5);
                     docPath = docPath.Substring(0, docPath.LastIndexOf("/"));
-                    string customSongsPath = docPath + "/CustomSongs/";
+                    string customSongsPath = docPath + "/Beat Saber_Data/CustomLevels/";
 
                     string hash = "";
 

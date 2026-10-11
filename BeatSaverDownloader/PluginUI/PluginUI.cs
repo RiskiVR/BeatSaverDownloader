@@ -2,8 +2,6 @@
 using HMUI;
 using IllusionPlugin;
 using SimpleJSON;
-using SongLoaderPlugin;
-using SongLoaderPlugin.OverrideClasses;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,6 +11,8 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using LegacyCore;
+using LegacyCore.Custom;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -126,18 +126,18 @@ namespace BeatSaverDownloader.PluginUI
             }
 
 
-            if (SongLoader.AreSongsLoaded)
+            if (Loader.isLoaded)
             {
                 SongLoader_SongsLoadedEvent(null, null);
             }
             else
             {
-                SongLoader.SongsLoadedEvent += SongLoader_SongsLoadedEvent;
+                Loader.levelsLoadedEvent += SongLoader_SongsLoadedEvent;
             }
         }
 
 
-        private void SongLoader_SongsLoadedEvent(SongLoader arg1, List<CustomLevel> arg2)
+        private void SongLoader_SongsLoadedEvent(Loader arg1, List<CustomLevelSO> arg2)
         {
             _levelCollections = Resources.FindObjectsOfTypeAll<LevelCollectionsForGameplayModes>().FirstOrDefault();
             _levelCollectionsForGameModes = ReflectionUtil.GetPrivateField<LevelCollectionsForGameplayModes.LevelCollectionForGameplayMode[]>(_levelCollections, "_collections").ToList();
@@ -148,7 +148,7 @@ namespace BeatSaverDownloader.PluginUI
             {
                 Logger.Log("Creating default playlists...");
 
-                List<CustomLevel> customLevels = SongLoader.CustomLevels;
+                List<CustomLevelSO> customLevels = Loader.customLevels;
                 List<IStandardLevel> oneSaberLevels = _levelCollections.GetLevels(GameplayMode.SoloOneSaber).Where(x => !customLevels.Cast<IStandardLevel>().Contains(x)).Cast<IStandardLevel>().ToList();
                 List<IStandardLevel> regularLevels = _levelCollections.GetLevels(GameplayMode.SoloStandard).Where(x => !customLevels.Cast<IStandardLevel>().Contains(x)).Cast<IStandardLevel>().ToList();
 
@@ -156,14 +156,14 @@ namespace BeatSaverDownloader.PluginUI
                 _allPlaylist.songs = new List<PlaylistSong>();
                 _allPlaylist.songs.AddRange(regularLevels.Select(x => new PlaylistSong() { songName = $"{x.songName} {x.songSubName}", level = x, oneSaber = false, path = "", key = "", levelId = x.levelID }));
                 _allPlaylist.songs.AddRange(oneSaberLevels.Select(x => new PlaylistSong() { songName = $"{x.songName} {x.songSubName}", level = x, oneSaber = true, path = "", key = "", levelId = x.levelID }));
-                _allPlaylist.songs.AddRange(customLevels.Select(x => new PlaylistSong() { songName = $"{x.songName} {x.songSubName}", level = x, oneSaber = false, path = x.customSongInfo.path, key = "", levelId = x.levelID }));
+                _allPlaylist.songs.AddRange(customLevels.Select(x => new PlaylistSong() { songName = $"{x.songName} {x.songSubName}", level = x, oneSaber = false, path = x.levelInfo.levelPath, key = "", levelId = x.levelID }));
                 Logger.Log($"Created \"{_allPlaylist.playlistTitle}\" playlist with {_allPlaylist.songs.Count} songs!");
 
                 Playlist _favPlaylist = new Playlist() { playlistTitle = "Your favorite songs", playlistAuthor = "You", image = Base64Sprites.BeastSaberLogo, icon = Base64ToSprite(Base64Sprites.BeastSaberLogo), fileLoc = "" };
                 _favPlaylist.songs = new List<PlaylistSong>();
                 _favPlaylist.songs.AddRange(regularLevels.Where(x => PluginConfig.favoriteSongs.Contains(x.levelID)).Select(x => new PlaylistSong() { songName = $"{x.songName} {x.songSubName}", level = x, oneSaber = false, path = "", key = "", levelId = x.levelID }));
                 _favPlaylist.songs.AddRange(oneSaberLevels.Where(x => PluginConfig.favoriteSongs.Contains(x.levelID)).Select(x => new PlaylistSong() { songName = $"{x.songName} {x.songSubName}", level = x, oneSaber = true, path = "", key = "", levelId = x.levelID }));
-                _favPlaylist.songs.AddRange(customLevels.Where(x => PluginConfig.favoriteSongs.Contains(x.levelID)).Select(x => new PlaylistSong() { songName = $"{x.songName} {x.songSubName}", level = x, oneSaber = false, path = x.customSongInfo.path, key = "", levelId = x.levelID }));
+                _favPlaylist.songs.AddRange(customLevels.Where(x => PluginConfig.favoriteSongs.Contains(x.levelID)).Select(x => new PlaylistSong() { songName = $"{x.songName} {x.songSubName}", level = x, oneSaber = false, path = x.levelInfo.levelPath, key = "", levelId = x.levelID }));
                 Logger.Log($"Created \"{_favPlaylist.playlistTitle}\" playlist with {_favPlaylist.songs.Count} songs!");
 
                 if (PluginConfig.playlists.Any(x => x.playlistTitle == "All songs" || x.playlistTitle == "Your favorite songs"))
@@ -332,13 +332,13 @@ namespace BeatSaverDownloader.PluginUI
             {
                 PluginConfig.favoriteSongs.Add(selectedLevel);
 
-                CustomLevel customSong = SongLoader.CustomLevels.FirstOrDefault(x => x.levelID == selectedLevel);
+                CustomLevelSO customSong = Loader.customLevels.FirstOrDefault(x => x.levelID == selectedLevel);
                 IStandardLevel regularSong = _levelCollections.GetLevels(GameplayMode.SoloStandard).FirstOrDefault(x => x.levelID == selectedLevel);
                 IStandardLevel oneSaberSong = _levelCollections.GetLevels(GameplayMode.SoloOneSaber).FirstOrDefault(x => x.levelID == selectedLevel);
 
                 if (customSong != null)
                 {
-                    PluginConfig.playlists.FirstOrDefault(x => x.playlistTitle == "Your favorite songs")?.songs.Add(new PlaylistSong() { songName = $"{customSong.songName} {customSong.songSubName}", level = customSong, oneSaber = false, path = customSong.customSongInfo.path, key = "" });
+                    PluginConfig.playlists.FirstOrDefault(x => x.playlistTitle == "Your favorite songs")?.songs.Add(new PlaylistSong() { songName = $"{customSong.songName} {customSong.songSubName}", level = customSong, oneSaber = false, path = customSong.levelInfo.levelPath, key = "" });
                 }
                 else if(regularSong != null)
                 {
@@ -368,7 +368,7 @@ namespace BeatSaverDownloader.PluginUI
                 bool zippedSong = false;
                 _deleting = true;
 
-                string _songPath = SongLoader.CustomLevels.First(x => x.levelID == levelId).customSongInfo.path;
+                string _songPath = Loader.customLevels.First(x => x.levelID == levelId).levelInfo.levelPath;
 
                 if (!string.IsNullOrEmpty(_songPath) && _songPath.Contains("/.cache/"))
                 {
@@ -408,7 +408,7 @@ namespace BeatSaverDownloader.PluginUI
                         string docPath = Application.dataPath;
                         docPath = docPath.Substring(0, docPath.Length - 5);
                         docPath = docPath.Substring(0, docPath.LastIndexOf("/"));
-                        string customSongsPath = docPath + "/CustomSongs/";
+                        string customSongsPath = docPath + "/Beat Saber_Data/CustomLevels/";
 
                         string hash = "";
 
@@ -438,7 +438,7 @@ namespace BeatSaverDownloader.PluginUI
 
                     SongListUITweaks.RemoveLevelFromPlaylists(levelId);
 
-                    SongLoader.Instance.RemoveSongWithLevelID(levelId);
+                    //SongLoader.Instance.RemoveSongWithLevelID(levelId);
                     
                     _tweaks.SetSongListLevels(_tweaks.GetSortedLevels(SongListUITweaks.lastSortMode), nextLevelId);
                 }
@@ -559,7 +559,7 @@ namespace BeatSaverDownloader.PluginUI
                     docPath = Application.dataPath;
                     docPath = docPath.Substring(0, docPath.Length - 5);
                     docPath = docPath.Substring(0, docPath.LastIndexOf("/"));
-                    customSongsPath = docPath + "/CustomSongs/" + songInfo.id + "/";
+                    customSongsPath = docPath + "/Beat Saber_Data/CustomLevels/" + songInfo.id + "/";
                     zipPath = customSongsPath + songInfo.id + ".zip";
                     if (!Directory.Exists(customSongsPath))
                     {

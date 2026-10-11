@@ -114,7 +114,7 @@ namespace BeatSaverDownloader.PluginUI
             if (_topButton == null)
             {
                 _topButton = BeatSaberUI.CreateUIButton(rectTransform, "SettingsButton");
-                BeatSaberUI.SetButtonText(_topButton, "Downloads");
+                BeatSaberUI.SetButtonText(_topButton, "Latest");
                 BeatSaberUI.SetButtonTextSize(_topButton, 3f);
                 (_topButton.transform as RectTransform).sizeDelta = new Vector2(20f, 6f);
                 (_topButton.transform as RectTransform).anchoredPosition = new Vector2(-42f, 73f);
@@ -124,7 +124,8 @@ namespace BeatSaverDownloader.PluginUI
                     if (!_parentMasterViewController._loading)
                     {
                         _parentMasterViewController._loading = true;
-                        _parentMasterViewController._sortBy = "top";
+                        _parentMasterViewController._legacy = false;
+                        _parentMasterViewController._sortBy = Sort.Latest;
                         _currentPage = 0;
                         _parentMasterViewController.ClearSearchInput();
                         _parentMasterViewController.GetPage(_currentPage);
@@ -137,7 +138,7 @@ namespace BeatSaverDownloader.PluginUI
             if (_newButton == null)
             {
                 _newButton = BeatSaberUI.CreateUIButton(rectTransform, "SettingsButton");
-                BeatSaberUI.SetButtonText(_newButton, "Upload Time");
+                BeatSaberUI.SetButtonText(_newButton, "Relevance");
                 BeatSaberUI.SetButtonTextSize(_newButton, 3f);
                 (_newButton.transform as RectTransform).sizeDelta = new Vector2(20f, 6f);
                 (_newButton.transform as RectTransform).anchoredPosition = new Vector2(-22f, 73f);
@@ -147,7 +148,8 @@ namespace BeatSaverDownloader.PluginUI
                     if (!_parentMasterViewController._loading)
                     {
                         _parentMasterViewController._loading = true;
-                        _parentMasterViewController._sortBy = "new";
+                        _parentMasterViewController._legacy = false;
+                        _parentMasterViewController._sortBy = Sort.Relevance;
                         _currentPage = 0;
                         _parentMasterViewController.ClearSearchInput();
                         _parentMasterViewController.GetPage(_currentPage);
@@ -161,7 +163,7 @@ namespace BeatSaverDownloader.PluginUI
             if (_starButton == null)
             {
                 _starButton = BeatSaberUI.CreateUIButton(rectTransform, "SettingsButton");
-                BeatSaberUI.SetButtonText(_starButton, "Plays");
+                BeatSaberUI.SetButtonText(_starButton, "2018 Maps");
                 BeatSaberUI.SetButtonTextSize(_starButton, 3f);
                 (_starButton.transform as RectTransform).sizeDelta = new Vector2(20f, 6f);
                 (_starButton.transform as RectTransform).anchoredPosition = new Vector2(-2f, 73f);
@@ -170,7 +172,9 @@ namespace BeatSaverDownloader.PluginUI
                 {
                     if (!_parentMasterViewController._loading)
                     {
-                        _parentMasterViewController._sortBy = "plays";
+                        _parentMasterViewController._loading = true;
+                        _parentMasterViewController._legacy = true;
+                        _parentMasterViewController._sortBy = Sort.Latest;
                         _currentPage = 0;
                         _parentMasterViewController.ClearSearchInput();
                         _parentMasterViewController.GetPage(_currentPage);
@@ -248,6 +252,7 @@ namespace BeatSaverDownloader.PluginUI
         protected override void DidDeactivate(DeactivationType type)
         {            
         }
+
 
         public void SelectTopButtons(TopButtonsState _newState)
         {

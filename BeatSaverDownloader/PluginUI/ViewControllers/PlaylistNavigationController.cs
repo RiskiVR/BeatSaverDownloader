@@ -1,12 +1,12 @@
 ﻿using BeatSaverDownloader.Misc;
 using SimpleJSON;
-using SongLoaderPlugin;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LegacyCore;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -124,7 +124,7 @@ namespace BeatSaverDownloader.PluginUI.ViewControllers
                     Logger.Log("Obtaining hash and url for " + item.key + ": " + item.songName);
                 yield return GetSongByPlaylistSong(playlist, item);
 #if DEBUG
-                Logger.Log("Song is null: " + (_lastRequestedSong == null) + "\n Level is downloaded: " + (SongLoader.CustomLevels.Any(x => x.levelID.Substring(0, 32) == _lastRequestedSong.hash.ToUpper())));
+                Logger.Log("Song is null: " + (_lastRequestedSong == null) + "\n Level is downloaded: " + (Loader.customLevels.Any(x => x.levelID.Substring(0, 32) == _lastRequestedSong.hash.ToUpper())));
 #endif
                 }
                 else
@@ -141,7 +141,7 @@ namespace BeatSaverDownloader.PluginUI.ViewControllers
                     };
                 }
 
-                if (_lastRequestedSong != null && !SongLoader.CustomLevels.Any(x => x.levelID.Substring(0, 32) == _lastRequestedSong.hash.ToUpper()))
+                if (_lastRequestedSong != null && !Loader.customLevels.Any(x => x.levelID.Substring(0, 32) == _lastRequestedSong.hash.ToUpper()))
                 {
 #if DEBUG
                     Logger.Log(item.key + ": " + item.songName+"  -  "+ _lastRequestedSong.hash);
@@ -173,7 +173,7 @@ namespace BeatSaverDownloader.PluginUI.ViewControllers
 
         private void AllSongsDownloaded()
         {
-            SongLoader.Instance.RefreshSongs(false);
+            Loader.instance.ReloadLevels(false);
 
             foreach(Playlist playlist in PluginConfig.playlists)
                 SongListUITweaks.MatchSongsForPlaylist(playlist);
@@ -189,7 +189,7 @@ namespace BeatSaverDownloader.PluginUI.ViewControllers
             UnityWebRequest wwwId = null;
             try
             {
-                string url = PluginConfig.beatsaverURL + $"/api/songs/detail/" + song.key;
+                string url = PluginConfig.beatsaverURL + "/api/maps/id/" + song.key;
                 if (!string.IsNullOrEmpty(playlist.customDetailUrl))
                 {
                     url = playlist.customDetailUrl + song.key;

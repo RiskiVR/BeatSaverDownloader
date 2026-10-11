@@ -1,13 +1,13 @@
 ﻿using BeatSaverDownloader.Misc;
 using BeatSaverDownloader.PluginUI.ViewControllers;
 using HMUI;
-using SongLoaderPlugin;
-using SongLoaderPlugin.OverrideClasses;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using LegacyCore;
+using LegacyCore.Custom;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -193,7 +193,7 @@ namespace BeatSaverDownloader.PluginUI
                 {
                     if (x.level == null || matchAll)
                     {
-                        x.level = SongLoader.CustomLevels.FirstOrDefault(y => (y.customSongInfo.path.Contains(x.key) && Directory.Exists(y.customSongInfo.path)) || (string.IsNullOrEmpty(x.levelId) ? false : y.levelID.StartsWith(x.levelId)));
+                        x.level = Loader.customLevels.FirstOrDefault(y => (y.levelInfo.levelPath.Contains(x.key) && Directory.Exists(y.levelInfo.levelPath)) || (string.IsNullOrEmpty(x.levelId) ? false : y.levelID.StartsWith(x.levelId)));
                     }
                 });
             }
@@ -325,7 +325,7 @@ namespace BeatSaverDownloader.PluginUI
 
         IStandardLevel[] SortLevelsByCreationTime(GameplayMode gameplayMode)
         {
-            DirectoryInfo customSongsFolder = new DirectoryInfo(Environment.CurrentDirectory.Replace('\\', '/') + "/CustomSongs/");
+            DirectoryInfo customSongsFolder = new DirectoryInfo(Environment.CurrentDirectory.Replace('\\', '/') + "/Beat Saber_Data/CustomLevels/");
 
             List<string> sortedFolders = customSongsFolder.GetDirectories().OrderByDescending(x => x.CreationTime.Ticks).Select(x => x.FullName.Replace('\\','/')).ToList();
             
@@ -333,7 +333,7 @@ namespace BeatSaverDownloader.PluginUI
 
             foreach(string path in sortedFolders)
             {
-                CustomLevel song = SongLoader.CustomLevels.FirstOrDefault(x => x.customSongInfo.path.StartsWith(path));
+                CustomLevelSO song = Loader.customLevels.FirstOrDefault(x => x.levelInfo.levelPath.StartsWith(path));
                 if (song != null)
                 {
                     sortedLevelIDs.Add(song.levelID);
