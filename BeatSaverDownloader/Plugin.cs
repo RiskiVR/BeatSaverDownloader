@@ -6,11 +6,8 @@ namespace BeatSaverDownloader
 {
     public class Plugin : IPlugin
     {
-        string IPlugin.Name => "BeatSaver Downloader";
-
-        string IPlugin.Version => "2.7.0";
-
-        
+        public string Name => "BeatSaver Downloader";
+        public string Version => "2.7.0";
 
         public void OnApplicationQuit()
         {
